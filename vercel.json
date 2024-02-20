@@ -2,13 +2,9 @@
     "version": 2,
     "builds": [
       {
-        "src": "hack-the-north-frontend/src/**/*",
-        "use": "@now/static-build",
-        "config": { "distDir": "hack-the-north-frontend/build" }
+        "src": "hack-the-north-frontend",
+        "use": "@now/node-server"
       }
-    ],
-    "routes": [
-      { "src": "/(.*)", "dest": "/hack-the-north-frontend/build/$1" }
     ]
   }
   
