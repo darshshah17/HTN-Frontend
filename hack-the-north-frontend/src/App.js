@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
 
 // apollo client is used with React to fetch data from the GraphQL API
 import { ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql } from '@apollo/client';
 
+// importing buttons, tabs, and event cards that are used in the site
 import Button from "./components/button";
 import Tabs from "./components/tabs";
 import {EventCardTitle, EventCardHeader, EventCardContent, EventCard} from "./components/eventCard";
 
 import './App.css';
 
+// create instance of the ApolloClient class and set up the GraphQL endpoint for data fetching
 const client = new ApolloClient({
   uri: 'https://api.hackthenorth.com/v3/graphql',
 
@@ -16,6 +19,7 @@ const client = new ApolloClient({
   cache: new InMemoryCache(),
 });
 
+// set up structure of GraphQL query
 const GET_EVENTS = gql`
   query {
     sampleEvents {
@@ -44,6 +48,18 @@ const Component = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRelatedEvent, setSelectedRelatedEvent] = useState(null);
+
+  // allow for persisting login despite refreshes
+  useEffect(() => {
+    const storedLoggedInStatus = localStorage.getItem('isLoggedIn');
+    const storedUsername = localStorage.getItem('username');
+  
+    if (storedLoggedInStatus === 'true' && storedUsername) {
+      setLoggedIn(true);
+      setUsername(storedUsername);
+    }
+  }, []);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -62,6 +78,8 @@ const Component = () => {
 
   const handleLogout = () => {
     setLoggedIn(false);
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('username');
   };
 
   const sortedEvents = [...filteredEvents].sort((a, b) => {
@@ -78,7 +96,9 @@ const Component = () => {
   const handleLogin = () => {
     if (username === 'hackthenorth2024' && password === 'HTN1234') {
       setLoggedIn(true);
-      setShowLoginModal(false); // Close the login modal after login is successful
+      setShowLoginModal(false);
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('username', username);
     } 
     
     else {
@@ -88,6 +108,41 @@ const Component = () => {
 
   const handleModalClose = () => {
     setShowLoginModal(false);
+  };
+
+  const sampleEvents = data.sampleEvents;
+
+  const relatedEventsMap = {};
+
+  sampleEvents.forEach((event) => {
+    event.related_events.forEach((relatedEventId) => {
+      if (!relatedEventsMap[relatedEventId]) {
+        const relatedEvent = sampleEvents.find((e) => e.id === relatedEventId);
+
+        // Include both public and private events if the user is logged in
+        if (relatedEvent && (loggedIn || relatedEvent.permission === 'public')) {
+          relatedEventsMap[relatedEventId] = relatedEvent.name;
+        }
+      }
+    });
+  });
+
+  const handleRelatedEventClick = (eventId) => {
+    setSelectedRelatedEvent(eventId);
+
+    // Scroll to the related event section
+    const relatedEventSection = document.getElementById(`event-${eventId}`);
+    if (relatedEventSection) {
+      relatedEventSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const getVideoUrl = () => {
+    const selectedEvent = sampleEvents.find((event) => event.id === selectedRelatedEvent);
+    if (selectedEvent) {
+      return loggedIn ? selectedEvent.private_url : selectedEvent.public_url;
+    }
+    return '';
   };
 
   return (
@@ -132,14 +187,12 @@ const Component = () => {
               <span className="close" onClick={handleModalClose}>&times;</span>
               <div className="modal-input">
                 <label>
-                  Username:
-                  <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}/>
+                  <input type="text" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)}/>
                 </label>
               </div>
               <div className="modal-input">
                 <label>
-                  Password:
-                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+                  <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}/>
                 </label>
               </div>
               <button onClick={handleLogin} className="Login-button">
@@ -153,44 +206,65 @@ const Component = () => {
           {loggedIn ? `Hey, ${username}!` : 'Hey!'}
         </h1>
 
-        <div className="grid grid-cols-3 gap-4 EventCard-container">
-        {sortedEvents.map((event) => (
-          <EventCard key={event.id} className="col-span-1">
-            <EventCardHeader>
-              <EventCardTitle>{event.name}</EventCardTitle>
-            </EventCardHeader>
-            <EventCardContent>
-                <p className="mb-4 break-words">{event.description}</p>
-                <p className="text-sm">
-                  <span className="EventCard-subtitle">Start Time: </span>
-                  {new Date(event.start_time).toLocaleString()}
-                </p>
-                <p className="text-sm">
-                  <span className="EventCard-subtitle">End Time: </span>
-                  {new Date(event.end_time).toLocaleString()}
-                </p>
-                <p className="text-sm">
-                  <span className="EventCard-subtitle">Speakers: </span>
-                  {event.speakers.map((speaker) => speaker.name).join(', ')}
-                </p>
-                {loggedIn && (
-                  <p className="text-sm">
-                    <span className="EventCard-subtitle">Private URL: </span>
-                    <a href={event.private_url} target="_blank" rel="noopener noreferrer">
-                      {event.private_url}
-                    </a>
-                  </p>
-                )}
-                <p className="text-sm">
-                  <span className="EventCard-subtitle">Public URL: </span>
-                  <a href={event.public_url} target="_blank" rel="noopener noreferrer">
-                    {event.public_url}
-                  </a>
-                </p>
-              </EventCardContent>
-            </EventCard>
-          ))}
-        </div>
+        {sortedEvents.length === 0 ? (
+          <p className='noEvents'>No events fall under this category :(</p>
+        ) : (
+          <div className="grid grid-cols-3 gap-4 EventCard-container">
+            {sortedEvents.map((event) => (
+              <EventCard key={event.id} className="col-span-1">
+                <EventCardHeader>
+                  <EventCardTitle>{event.name}</EventCardTitle>
+                </EventCardHeader>
+                <EventCardContent>
+                    <p className="mb-4 break-words">{event.description}</p>
+                    <p className="text-sm">
+                      <span className="EventCard-subtitle">Start Time: </span>
+                      {new Date(event.start_time).toLocaleString()}
+                    </p>
+                    <p className="text-sm">
+                      <span className="EventCard-subtitle">End Time: </span>
+                      {new Date(event.end_time).toLocaleString()}
+                    </p>
+                    <p className="text-sm">
+                      <span className="EventCard-subtitle">Speakers: </span>
+                      {event.speakers.map((speaker) => speaker.name).join(', ')}
+                    </p>
+                    {loggedIn && (
+                      <p className="text-sm">
+                        <span className="EventCard-subtitle">Private URL: </span>
+                        <a href={event.private_url} target="_blank" rel="noopener noreferrer">
+                          {event.private_url}
+                        </a>
+                      </p>
+                    )}
+                    <p className="text-sm">
+                      <span className="EventCard-subtitle">Public URL: </span>
+                      <a href={event.public_url} target="_blank" rel="noopener noreferrer">
+                        {event.public_url}
+                      </a>
+                    </p>
+
+                    <p className="text-sm">
+                      <span className="EventCard-subtitle">Related Events: </span>
+                      {event.related_events.map((relatedEventId, index) => (
+                        <React.Fragment key={relatedEventId}>
+                          {index > 0 && ' '}
+                          {relatedEventsMap[relatedEventId] && (
+                            <span
+                              onClick={() => handleRelatedEventClick(relatedEventId)}
+                              className="related-event-link"
+                            >
+                              {relatedEventsMap[relatedEventId]}
+                            </span>
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </p>
+                  </EventCardContent>
+                </EventCard>
+              ))}
+            </div>
+        )}
       </div>
     </div>
   );
