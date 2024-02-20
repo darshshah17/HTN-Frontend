@@ -1,0 +1,164 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #000000;
+  font-size: 14px;
+}
+
+.container {
+  max-width: 1200px; /* Adjust the maximum width based on your design */
+  margin: 0 auto;
+  padding: 50px; /* Add padding on both sides to create space */
+  position: relative;
+}
+
+a {
+  text-decoration: underline italic;
+  /* Add other styles as needed */
+}
+
+/* navbar styles */
+.navbar .text {
+  color: #000000;
+}
+
+
+.Darshboard {
+  color: #000000;
+}
+
+/* --------------------------------------------------------------- */
+
+/* Login and Searchbar */
+
+/* Modal */
+.modal {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-input {
+  margin-top: 10px;
+}
+
+.right-div {
+  display: flex;
+  align-items: center; /* Align items vertically center */
+}
+
+.search-bar input {
+  appearance: none;
+  background-color: #fff;
+  border-radius: 24px;
+  border-style: none;
+  box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
+  box-sizing: border-box;
+  color: #555555;
+  cursor: pointer;
+  display: inline-flex;
+  fill: currentcolor;
+  font-family: "Google Sans",Roboto,Arial,sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  height: 48px;
+  letter-spacing: .25px;
+  line-height: normal;
+  max-width: 100%;
+  overflow: visible;
+  padding: 2px 24px;
+  position: relative;
+  text-transform: none;
+  transition: box-shadow 280ms cubic-bezier(.4, 0, .2, 1),opacity 15ms linear 30ms,transform 270ms cubic-bezier(0, 0, .2, 1) 0ms;
+  width: auto;
+
+  margin-right: 10px;
+  margin-bottom: 20px;
+
+  &:hover {
+    cursor: text;
+  }
+}
+/* --------------- */
+
+
+.buttons-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.right-div .button {
+  margin-right: 0px;
+}
+
+/* event card */
+.EventCard-subtitle {
+  font-weight: bold;
+  color: #000000; /* Set the font color to black */
+}
+
+.text-sm a {
+  color: inherit;
+  font-style: italic;
+  font-size: smaller;
+}
+
+/* --------------- */
+
+/* footer */
+.footer {
+  margin-top: 50px;
+  text-align: center;
+  padding: 10px;
+}
+
+@media only screen and (max-width: 1150px) {
+  .EventCard-container {
+    grid-template-columns: 1fr; /* Change to 1 column on screens with a maximum width of 768px */
+  }
+}
+
+@media only screen and (max-width: 810px) {
+  .right-div .search-bar {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 610px) {
+  .right-div .search-bar {
+    display: block;
+  }
+
+  .left-div Button {
+    display: none;
+  }
+}

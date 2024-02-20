@@ -1,0 +1,53 @@
+.EventCard-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    margin-bottom: -16px; /* Counteract margin-bottom from .custom-EventCard */
+    gap: 16px;
+  }
+  
+  .custom-EventCard {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 16px;
+    border-radius: 8px;
+    /* border: 1px solid #555555; */
+    box-shadow: rgba(0, 0, 0, 0.1) 0 2px 4px, rgba(0, 0, 0, 0.08) 0 4px 8px, rgba(0, 0, 0, 0.06) 0 1px 12px;
+    margin-bottom: 16px;
+    margin-right: 10px;
+    margin-top: 10px;
+    /* width: calc(33.333% - 16px); */
+    margin-right: 16px;
+    box-sizing: border-box;
+    transition: box-shadow 280ms cubic-bezier(.4, 0, .2, 1), opacity 15ms linear 30ms, transform 270ms cubic-bezier(0, 0, .2, 1) 0ms;
+    margin-right: 10px;
+  }
+  
+  .EventCard-header {
+    margin-bottom: 8px;
+  }
+  
+  .EventCard-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #333333;
+    margin-bottom: 8px;
+  }
+  
+  .EventCard-content {
+    color: #555555;
+  }
+
+  /* Clear margin for the last EventCard in a row */
+  .custom-EventCard:nth-child(3n) {
+    margin-right: 0;
+  }
+  
+  /* Responsive styles based on screen size */
+  @media (max-width: 767px) {
+    /* For screens up to 767px (mobile) */
+    .custom-EventCard {
+      width: 100%; /* Full width for mobile */
+      margin-right: 0;
+    }
+  }
+  
