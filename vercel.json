@@ -2,7 +2,7 @@
   "builds": [
     {
       "src": "hack-the-north-frontend/src/App.js",
-      "use": "@now/node-server"
+      "use": "@vercel/node" 
     }
   ]
 }
