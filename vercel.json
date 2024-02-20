@@ -1,0 +1,9 @@
+{
+    "builds": [
+      {
+        "src": "hack-the-north-frontend",
+        "use": "@now/node-server"
+      }
+    ]
+  }
+  
