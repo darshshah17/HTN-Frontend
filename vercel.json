@@ -1,9 +1,8 @@
 {
     "builds": [
       {
-        "src": "hack-the-north-frontend",
+        "src": "package.json",
         "use": "@now/node-server"
       }
     ]
   }
-  
