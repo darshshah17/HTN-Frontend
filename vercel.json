@@ -1,12 +1,10 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/" }],
-
   "builds": [
     {
       "src": "hack-the-north-frontend/src/App.js",
       "use": "@now/node-server"
     }
   ]
-  }
+}
 
   
